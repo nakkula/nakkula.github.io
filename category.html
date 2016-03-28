@@ -1,35 +1,51 @@
 ---
-layout: page
-title: Category Index
-permalink: /categories/
-tags: [Categories]
-description: "An archive of posts sorted by categories."
+layout: landing
+title: Categories
+description: Recent posts listed by category.
 ---
-<ul class="tag-box inline">
-{% assign tags_list = site.categories %}
-{% if tags_list.first[0] == null %}
-{% for tag in tags_list %}
-<li><a href="#{{ tag }}">{{ tag | capitalize }} <span>{{ site.tags[tag].size }}</span></a></li>
-{% endfor %}
-{% else %}
-{% for tag in tags_list %}
-<li><a href="#{{ tag[0] }}">{{ tag[0] | capitalize }} <span>{{ tag[1].size }}</span></a></li>
-{% endfor %}
-{% endif %}
-{% assign tags_list = nil %}
-</ul>
-{% for tag in site.categories %}
-<h2 id="{{ tag[0] }}">{{ tag[0] | capitalize }}</h2>
-<ul class="post-list">
-{% assign pages_list = tag[1] %}
-{% for post in pages_list %}
-{% if post.title != null %}
-{% if group == null or group == post.group %}
-<li><a href="{{ post.url }}">{{ post.title }}<span class="entry-date"><time datetime="{{ post.date | date_to_xmlschema }}" itemprop="datePublished">{{ post.date | date: "%b %d, %Y" }}</time></a></li>
-{% endif %}
-{% endif %}
-{% endfor %}
-{% assign pages_list = nil %}
-{% assign group = nil %}
-</ul>
+
+<div class="ui inverted purple vertical segment">
+  <div class="ui very relaxed stackable page grid">
+    <div class="row">
+      <div class="column">
+          {% include site-categories.html %}
+      </div>
+    </div> <!-- /row -->
+  </div>
+</div>
+
+{% for category in site.categories %}
+  {% capture inverted %}{{ forloop.index | modulo:2 }}{% endcapture %}
+  <div class="ui {% if inverted == '0' %}inverted purple {% endif %}vertical segment">
+    <div class="ui very relaxed stackable page grid">
+      <div class="row">
+        <div class="column">
+          <a id="{{ category.first }}"></a>
+          <h1 class="left aligned ui {% if inverted == '0' %}inverted {% endif %}header">
+          {{ category.first | capitalize }}
+          </h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="column">
+          <div class="ui {% if inverted == '0' %}inverted {% endif %}animated selection list">
+          {% for post in site.categories[category.first] %}
+            <a class="item" href="{{ post.url }}">
+              <div class="recent-posts-title">{{ post.title }}</div>
+              {% if post.image %}
+              <div class="thumb-img">
+                <img class="ui rounded image" src="{{ post.image }}" alt="{{ post.title }}">
+              </div>
+              {% else %}
+              <small> {{post.excerpt}} </small>
+              {% endif %}
+              <div class="right floated"><small>{{ post.date | date: "%b %-d, %Y" }}</small></div>
+            </a>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endfor %}
